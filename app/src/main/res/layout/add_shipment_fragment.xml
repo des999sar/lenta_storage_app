@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingStart="25dp"
+    android:paddingTop="75dp"
+    android:paddingEnd="25dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Дата отгрузки"
+        android:textSize="20sp"
+        android:textColor="@color/black"
+        android:textAlignment="center"/>
+    <Button
+        android:id="@+id/btnSetDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:text="Выбрать дату" />
+    <EditText
+        android:id="@+id/editProductAmount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Количество товара отгружено"
+        android:inputType="number"
+        android:textSize="20sp" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Товар"
+        android:textSize="20sp"
+        android:textColor="@color/black"/>
+    <Spinner
+        android:id="@+id/spinnerProductId"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:textSize="20sp"/>
+<!--    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Номер приказа отгрузки"
+        android:textSize="20sp"
+        android:textColor="@color/black"/>
+    <Spinner
+        android:id="@+id/spinnerShipmentOrderId"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:textSize="20sp"/>-->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Сотрудник"
+        android:textSize="20sp"
+        android:textColor="@color/black"/>
+    <Spinner
+        android:id="@+id/spinnerEmpId"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:textSize="20sp"/>
+    <Button
+        android:id="@+id/btnAdd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:outlineAmbientShadowColor="#6200ED"
+        android:text="Добавить" />
+
+</LinearLayout>
