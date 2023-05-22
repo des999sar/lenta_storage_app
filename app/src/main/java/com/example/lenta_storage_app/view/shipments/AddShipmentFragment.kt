@@ -18,6 +18,7 @@ import com.example.lenta_storage_app.model.entities.Product
 import com.example.lenta_storage_app.view.DatePickerFragment
 import com.example.lenta_storage_app.view.ShifSuperVisorActivity
 import java.time.LocalDate
+import java.time.LocalTime
 
 class AddShipmentFragment constructor(shipmentOrderId : Int) : Fragment() {
 
@@ -44,6 +45,9 @@ class AddShipmentFragment constructor(shipmentOrderId : Int) : Fragment() {
         //val spinnerShipmentOrderId = view.findViewById(R.id.spinnerShipmentOrderId) as Spinner
         val spinnerEmpId = view.findViewById(R.id.spinnerEmpId) as Spinner
         val btnSetShipmentDate = view.findViewById(R.id.btnSetDate) as Button
+        val editShipmentTime = view.findViewById(R.id.editShipmentTime) as EditText
+        val currentTimeStr = MyDateFormatter().formatTimeToString(MyDateFormatter().getCurrentLocalTime())
+        editShipmentTime.setText(currentTimeStr)
         btnSetShipmentDate.setOnClickListener { _ ->
             var datePickerFragment = DatePickerFragment()
             datePickerFragment.onDismissListener = {
@@ -58,17 +62,16 @@ class AddShipmentFragment constructor(shipmentOrderId : Int) : Fragment() {
 
         btnAdd.setOnClickListener { _ ->
             db.addShipment(LocalDate.parse(btnSetShipmentDate.text),
-            editProductAmount.text.toString().toInt(),
-            (spinnerProductId.selectedItem as Product).id,
-            _shipmentOrderId,
-            //(spinnerShipmentOrderId.selectedItem as ShipmentOrder).id,
-            (spinnerEmpId.selectedItem as Employee).id)
+                LocalTime.parse(editShipmentTime.text),
+                editProductAmount.text.toString().toInt(),
+                (spinnerProductId.selectedItem as Product).id,
+                _shipmentOrderId,
+                (spinnerEmpId.selectedItem as Employee).id)
             shifSuperVisorActivity.returnBack()
         }
 
         setProductsSpinnerAdapter(spinnerProductId)
         setEmployeesSpinnerAdapter(spinnerEmpId)
-        //setShipmentOrdersSpinnerAdapter(spinnerShipmentOrderId)
     }
 
     private fun setProductsSpinnerAdapter(spinner : Spinner) {

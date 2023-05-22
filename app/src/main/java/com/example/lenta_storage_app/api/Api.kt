@@ -31,6 +31,7 @@ class Api {
         val url = "jdbc:mysql://" + hostName + ":" + port + "/" + databaseName + "?useSSL=false"
         //для локального подключения
         //val url = "jdbc:mysql://" + hostName + "/" + databaseName + "?serverTimezone=UTC"
+
         val database = Database.connect(
             url,
             user = username,
@@ -38,5 +39,16 @@ class Api {
         )
 
         return database
+    }
+
+    fun getJdbcConnection() : Connection {
+        Class.forName("com.mysql.jdbc.Driver").newInstance()
+        //для удаленного подключения
+        val url = "jdbc:mysql://" + hostName + ":" + port + "/" + databaseName + "?useSSL=false"
+        //для локального подключения
+        //val url = "jdbc:mysql://" + hostName + "/" + databaseName + "?serverTimezone=UTC"
+
+        val connection = DriverManager.getConnection(url, username, password)
+        return connection
     }
 }

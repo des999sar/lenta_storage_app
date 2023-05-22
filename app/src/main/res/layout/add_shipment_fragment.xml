@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingStart="25dp"
     android:paddingTop="75dp"
     android:paddingEnd="25dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@drawable/background">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/shipment_logo" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="" />
 
     <TextView
         android:layout_width="match_parent"
@@ -20,7 +41,22 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"
+        android:backgroundTint="@color/purple_700"
         android:text="Выбрать дату" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Время отгрузки"
+        android:textSize="20sp"
+        android:textColor="@color/black"
+        android:textAlignment="center"/>
+    <EditText
+        android:id="@+id/editShipmentTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Время отгрузки"
+        android:inputType="time"
+        android:textSize="20sp" />
     <EditText
         android:id="@+id/editProductAmount"
         android:layout_width="match_parent"
@@ -39,17 +75,6 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:textSize="20sp"/>
-<!--    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Номер приказа отгрузки"
-        android:textSize="20sp"
-        android:textColor="@color/black"/>
-    <Spinner
-        android:id="@+id/spinnerShipmentOrderId"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:textSize="20sp"/>-->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -66,7 +91,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:outlineAmbientShadowColor="#6200ED"
+        android:backgroundTint="@color/purple_700"
         android:text="Добавить" />
-
+    </LinearLayout>
+    </ScrollView>
 </LinearLayout>

@@ -2,6 +2,8 @@ package com.example.lenta_storage_app.view
 
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.view.MenuItem
+import android.view.View
 import android.widget.Button
 import android.widget.DatePicker
 import androidx.appcompat.app.AppCompatActivity
@@ -10,12 +12,15 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.lenta_storage_app.R
 import com.example.lenta_storage_app.infrastructure.MyDateFormatter
+import com.example.lenta_storage_app.view.complectations.ComplectationsFragment
 import com.example.lenta_storage_app.view.incomes.IncomeOrdersFragment
 import com.example.lenta_storage_app.view.shipments.ShipmentOrdersFragment
 import com.google.android.material.navigation.NavigationBarView
 import java.time.LocalDate
 
-class ShifSuperVisorActivity : AppCompatActivity(), /*FragmentManager.OnBackStackChangedListener,*/ DatePickerDialog.OnDateSetListener {
+class ShifSuperVisorActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListener {
+
+    public lateinit var navigationBarView : NavigationBarView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -25,9 +30,10 @@ class ShifSuperVisorActivity : AppCompatActivity(), /*FragmentManager.OnBackStac
         openFragment(StoragesFragment())
 
         //config bottom navigation view
-        var navigationBarView = findViewById<NavigationBarView>(R.id.bottom_navigation)
+        navigationBarView = findViewById(R.id.bottom_navigation)
         navigationBarView.setOnItemSelectedListener (onNavigationItemSelectedListener)
         //supportFragmentManager.addOnBackStackChangedListener (this)
+        navigationBarView.menu.findItem(R.id.action_shipments).isVisible = false
     }
 
     private val onNavigationItemSelectedListener = NavigationBarView.OnItemSelectedListener { menuItem ->
@@ -47,12 +53,15 @@ class ShifSuperVisorActivity : AppCompatActivity(), /*FragmentManager.OnBackStac
                 openFragment(ShipmentOrdersFragment())
                 return@OnItemSelectedListener true
             }
+            R.id.action_complectations -> {
+                openFragment(ComplectationsFragment())
+                return@OnItemSelectedListener true
+            }
         }
         false
     }
 
     fun openFragment(fragment : Fragment) {
-
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_layout, fragment).addToBackStack(null)
             .setReorderingAllowed(true)
@@ -74,11 +83,6 @@ class ShifSuperVisorActivity : AppCompatActivity(), /*FragmentManager.OnBackStac
     fun setActionBarTitle(title : String) {
         supportActionBar?.title = title
     }
-
-/*    override fun onBackStackChanged() {
-        val canGoBack = supportFragmentManager.backStackEntryCount > 0
-        supportActionBar!!.setDisplayHomeAsUpEnabled(canGoBack)
-    }*/
 
     override fun onDateSet(p0: DatePicker?, p1: Int, p2: Int, p3: Int) {
         var btnSetIncomeDate = findViewById(R.id.btnSetDate) as Button

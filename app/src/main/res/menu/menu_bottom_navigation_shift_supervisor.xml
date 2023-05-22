@@ -9,6 +9,10 @@
         android:icon="@android:drawable/stat_sys_download"
         android:title="Поставки"></item>
     <item
+        android:id="@+id/action_complectations"
+        android:icon="?attr/actionModePasteDrawable"
+        android:title="Комплектации"></item>
+    <item
         android:id="@+id/action_shipments"
         android:icon="@android:drawable/stat_sys_upload"
         android:title="Отгрузки"></item>

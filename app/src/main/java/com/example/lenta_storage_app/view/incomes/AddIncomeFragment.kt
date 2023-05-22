@@ -18,6 +18,7 @@ import com.example.lenta_storage_app.model.entities.Product
 import com.example.lenta_storage_app.view.DatePickerFragment
 import com.example.lenta_storage_app.view.ShifSuperVisorActivity
 import java.time.LocalDate
+import java.time.LocalTime
 
 class AddIncomeFragment constructor(incomeOrderId : Int) : Fragment() {
 
@@ -44,6 +45,9 @@ class AddIncomeFragment constructor(incomeOrderId : Int) : Fragment() {
         //val spinnerIncomeOrderId = view.findViewById(R.id.spinnerIncomeOrderId) as Spinner
         val spinnerEmpId = view.findViewById(R.id.spinnerEmpId) as Spinner
         val btnSetIncomeDate = view.findViewById(R.id.btnSetDate) as Button
+        val editIncomeTime = view.findViewById(R.id.editIncomeTime) as EditText
+        val currentTimeStr = MyDateFormatter().formatTimeToString(MyDateFormatter().getCurrentLocalTime())
+        editIncomeTime.setText(currentTimeStr)
         btnSetIncomeDate.setOnClickListener { _ ->
             var datePickerFragment = DatePickerFragment()
             datePickerFragment.onDismissListener = {
@@ -58,17 +62,16 @@ class AddIncomeFragment constructor(incomeOrderId : Int) : Fragment() {
 
         btnAdd.setOnClickListener { _ ->
             db.addIncome(LocalDate.parse(btnSetIncomeDate.text),
-            editProductAmount.text.toString().toInt(),
-            (spinnerProductId.selectedItem as Product).id,
-            _incomeOrderId,
-            //(spinnerIncomeOrderId.selectedItem as IncomeOrder).id,
-            (spinnerEmpId.selectedItem as Employee).id)
+                LocalTime.parse(editIncomeTime.text),
+                editProductAmount.text.toString().toInt(),
+                (spinnerProductId.selectedItem as Product).id,
+                _incomeOrderId,
+                (spinnerEmpId.selectedItem as Employee).id)
             shifSuperVisorActivity.returnBack()
         }
 
         setProductsSpinnerAdapter(spinnerProductId)
         setEmployeesSpinnerAdapter(spinnerEmpId)
-        //setIncomeOrdersSpinnerAdapter(spinnerIncomeOrderId)
     }
 
     private fun setProductsSpinnerAdapter(spinner : Spinner) {

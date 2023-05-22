@@ -10,17 +10,17 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Дата создания"
+        android:text="Дата комплектации"
         android:textSize="20sp"
         android:textColor="@color/black"
-        android:textAlignment="center"/>
+        android:textAlignment="center" />
     <Button
         android:id="@+id/btnSetDate"
         android:layout_width="match_parent"
@@ -29,21 +29,35 @@
         android:layout_marginRight="25dp"
         android:backgroundTint="@color/purple_700"
         android:text="Выбрать дату" />
-    <EditText
-        android:id="@+id/editOrderNumber"
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Номер приказа"
+        android:text="Время комплектации"
+        android:textSize="20sp"
+        android:textColor="@color/black"
+        android:textAlignment="center"/>
+    <EditText
+        android:id="@+id/editComplectationTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Время комплектации"
+        android:inputType="time"
+        android:textSize="20sp" />
+    <EditText
+        android:id="@+id/editProductAmount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Количество товара"
         android:inputType="number"
         android:textSize="20sp" />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Поставщик"
+        android:text="№ приемки/поставки"
         android:textSize="20sp"
         android:textColor="@color/black"/>
     <Spinner
-        android:id="@+id/spinnerSupplierId"
+        android:id="@+id/spinnerIncomeId"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:textSize="20sp"/>
@@ -54,6 +68,6 @@
         android:layout_gravity="center"
         android:backgroundTint="@color/purple_700"
         android:text="Добавить" />
-</LinearLayout>
+        </LinearLayout>
     </ScrollView>
 </LinearLayout>

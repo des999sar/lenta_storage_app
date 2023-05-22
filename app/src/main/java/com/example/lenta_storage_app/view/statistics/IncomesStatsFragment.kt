@@ -1,21 +1,26 @@
 package com.example.lenta_storage_app.view.statistics
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.example.lenta_storage_app.R
 import com.example.lenta_storage_app.api.ApplicationDbContext
 import com.example.lenta_storage_app.infrastructure.MyDateFormatter
+import com.example.lenta_storage_app.infrastructure.MyValueFormatter
 import com.example.lenta_storage_app.view.DatePickerFragment
 import com.example.lenta_storage_app.view.DirectorActivity
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
+import com.github.mikephil.charting.utils.ColorTemplate
 import java.time.LocalDate
 
 
@@ -23,6 +28,9 @@ class IncomesStatsFragment : Fragment() {
 
     private var db = ApplicationDbContext()
     private lateinit var directorActivity: DirectorActivity
+    private lateinit var textIncomeAmount : TextView
+    private lateinit var textComplectedAmount : TextView
+    private lateinit var textShipmentAmount : TextView
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,10 +43,14 @@ class IncomesStatsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         directorActivity = (activity as DirectorActivity)
-        directorActivity.setActionBarTitle("Приемка/Комплектация")
+        directorActivity.setActionBarTitle("Статистика")
 
         var buttonCustomDate = view.findViewById(R.id.btnSetDate) as Button
         var buttonToday = view.findViewById(R.id.button_today) as Button
+
+        textIncomeAmount = view.findViewById(R.id.text_income_amount) as TextView
+        textComplectedAmount = view.findViewById(R.id.text_complected_amount) as TextView
+        textShipmentAmount = view.findViewById(R.id.text_shipment_amount) as TextView
 
         buttonCustomDate.setOnClickListener { _ ->
             var datePickerFragment = DatePickerFragment()
@@ -63,34 +75,65 @@ class IncomesStatsFragment : Fragment() {
         var chart = view?.findViewById(R.id.stat_chart) as BarChart
         chart.clear()
         var entries = ArrayList<BarEntry>()
-
-        var incomes = db.getIncomeStats(date)
-        val dateNames = ArrayList<String>()
+        var stats = db.getStatisticsOnDate(date)
+        val timeList = ArrayList<String>()
+        val amounts = arrayOf(0, 0, 0)
         var i = 0
-        var sum = 0
 
-        for (income in incomes) {
-            //add entry like (0, 25), where 0 is date, 25 – sum amount for this date
-            entries.add(BarEntry(i.toFloat(), income.sumAmount.toFloat()))
-            dateNames.add(MyDateFormatter().formatDateToString(income.incomeDate))
-            sum += income.sumAmount
+        for (stat in stats) {
+            entries.add(BarEntry(i.toFloat(),
+                floatArrayOf(
+                    stat.incomeAmount.toFloat(),
+                    stat.complectedAmount.toFloat(),
+                    stat.shipmentAmount.toFloat()
+                )))
+
+            timeList.add(stat.timeString)
+
+            amounts[0] += stat.incomeAmount
+            amounts[1] += stat.complectedAmount
+            amounts[2] += stat.shipmentAmount
+
             i++
         }
 
-        var dataSet = BarDataSet(entries, "Принято, шт.")
-        chart.data = BarData(dataSet)
+        var dataSet : BarDataSet
+
+        if (chart.data != null && chart.data.dataSetCount > 0) {
+            dataSet = chart.data.getDataSetByIndex(0) as BarDataSet
+            dataSet.values = entries
+            chart.data.notifyDataChanged()
+            chart.notifyDataSetChanged()
+        }
+        else {
+            dataSet = BarDataSet(entries, "Статистика")
+            dataSet.setDrawIcons(false)
+
+            val colors = IntArray(3)
+            System.arraycopy(ColorTemplate.MATERIAL_COLORS, 0, colors, 0, 3)
+            dataSet.colors = mutableListOf(colors[0], colors[1], colors[2])
+
+            dataSet.stackLabels = arrayOf("Принято", "Скомплектовано", "Отгружено")
+
+            var dataSets = ArrayList<IBarDataSet>()
+            dataSets.add(dataSet)
+
+            var barData = BarData(dataSets)
+            barData.setValueTextColor(Color.BLACK)
+            barData.setValueTextSize(8f)
+            barData.setDrawValues(false)
+
+            chart.xAxis.valueFormatter = MyValueFormatter(timeList)
+            chart.xAxis.textSize = 10f
+
+            chart.data = barData
+        }
+
+        chart.setFitBars(true)
         chart.invalidate()
 
-/*        val formatter: ValueFormatter = object : ValueFormatter() {
-            override fun getAxisLabel(value: Float, axis: AxisBase): String {
-                return dateNames[value.toInt()]
-            }
-        }
-        val xAxis: XAxis = chart.getXAxis()
-        xAxis.granularity = 0f
-        xAxis.valueFormatter = formatter*/
-
-        var textIncomeAmount = view?.findViewById(R.id.text_amount) as TextView
-        textIncomeAmount.text = "Принято: " + sum
+        textIncomeAmount.text = "Принято: " + amounts[0]
+        textComplectedAmount.text = "Скомплектовано: " + amounts[1]
+        textShipmentAmount.text = "Отгружено: " + amounts[2]
     }
 }

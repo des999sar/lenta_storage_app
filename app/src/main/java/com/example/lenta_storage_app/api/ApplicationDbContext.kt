@@ -1,6 +1,7 @@
 package com.example.lenta_storage_app.api
 
 import com.example.lenta_storage_app.model.entities.Client
+import com.example.lenta_storage_app.model.entities.Complectation
 import com.example.lenta_storage_app.model.entities.Employee
 import com.example.lenta_storage_app.model.entities.Income
 import com.example.lenta_storage_app.model.entities.IncomeOrder
@@ -9,10 +10,12 @@ import com.example.lenta_storage_app.model.entities.Product
 import com.example.lenta_storage_app.model.entities.Shipment
 import com.example.lenta_storage_app.model.entities.ShipmentOrder
 import com.example.lenta_storage_app.model.entities.ShipmentStat
+import com.example.lenta_storage_app.model.entities.Statistic
 import com.example.lenta_storage_app.model.entities.Storage
 import com.example.lenta_storage_app.model.entities.Supplier
 import com.example.lenta_storage_app.model.entities.User
 import com.example.lenta_storage_app.model.tables.Clients
+import com.example.lenta_storage_app.model.tables.Complectations
 import com.example.lenta_storage_app.model.tables.Employees
 import com.example.lenta_storage_app.model.tables.IncomeOrders
 import com.example.lenta_storage_app.model.tables.Incomes
@@ -31,19 +34,21 @@ import org.ktorm.dsl.from
 import org.ktorm.dsl.groupBy
 import org.ktorm.dsl.gt
 import org.ktorm.dsl.insert
+import org.ktorm.dsl.leftJoin
 import org.ktorm.dsl.map
 import org.ktorm.dsl.orderBy
 import org.ktorm.dsl.select
 import org.ktorm.dsl.sum
 import org.ktorm.dsl.where
+import org.ktorm.expression.SqlExpression
 import java.time.LocalDate
+import java.time.LocalTime
 import java.util.Calendar
 import java.util.Date
 import kotlin.reflect.jvm.internal.impl.descriptors.Visibilities.Local
 
 class ApplicationDbContext {
     private var api = Api()
-    val users get() = sequenceOf(Users)
 
     fun getStorages() : ArrayList<Storage> {
         val db = api.getConnection()
@@ -112,20 +117,25 @@ class ApplicationDbContext {
         db.delete(Products) { it.id eq id }
     }
 
-    fun getIncomeStats(date : LocalDate) : ArrayList<IncomeStat> {
-        val db = api.getConnection()
-        val resultList = ArrayList<IncomeStat>()
-        val sumAmount = avg(Incomes.productAmount).aliased("sum_amount")
-
+    fun getStatisticsOnDate(date : LocalDate) : ArrayList<Statistic> {
+        val db = api.getJdbcConnection()
+        var resultList = ArrayList<Statistic>()
         val convertedDate = java.sql.Date.valueOf(date.toString())
-        for (row in db.from(Incomes).select(Incomes.incomeDate, sumAmount)
-            .where { (Incomes.incomeDate eq convertedDate) }
-            .groupBy(Incomes.incomeDate)) {
-            val item = IncomeStat(
-                LocalDate.parse(row[Incomes.incomeDate].toString()),
-                row.getInt(2)
-            )
-            resultList.add(item)
+
+        try {
+            val sql = "call lenta_storage.get_stats_on_date('$convertedDate');".trimIndent()
+            val query = db.prepareStatement(sql)
+            val result = query.executeQuery()
+            while (result.next()) {
+                resultList.add(Statistic(
+                    result.getString(1),
+                    result.getInt(2),
+                    result.getInt(3),
+                    result.getInt(4)
+                ))
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
 
         return resultList
@@ -159,6 +169,7 @@ class ApplicationDbContext {
             val item = Income(
                 row[Incomes.id]!!.toInt(),
                 LocalDate.parse(row[Incomes.incomeDate].toString()),
+                LocalTime.parse(row[Incomes.incomeTime].toString()),
                 row[Incomes.productAmount]!!.toInt(),
                 row[Incomes.productId]!!.toInt(),
                 row[Incomes.incomeOrderId]!!.toInt(),
@@ -170,10 +181,32 @@ class ApplicationDbContext {
         return resultList
     }
 
-    fun addIncome(incomeDate : LocalDate, productAmount : Int, productId : Int, incomeOrderId : Int, empId : Int) {
+    fun getIncomes() : ArrayList<Income> {
+        val db = api.getConnection()
+        val resultList = ArrayList<Income>()
+
+        for (row in db.from(Incomes).select()) {
+            val item = Income(
+                row[Incomes.id]!!.toInt(),
+                LocalDate.parse(row[Incomes.incomeDate].toString()),
+                LocalTime.parse(row[Incomes.incomeTime].toString()),
+                row[Incomes.productAmount]!!.toInt(),
+                row[Incomes.productId]!!.toInt(),
+                row[Incomes.incomeOrderId]!!.toInt(),
+                row[Incomes.empId]!!.toInt()
+            )
+            resultList.add(item)
+        }
+
+        return resultList
+    }
+
+    fun addIncome(incomeDate : LocalDate, incomeTime : LocalTime, productAmount : Int,
+                  productId : Int, incomeOrderId : Int, empId : Int) {
         val db = api.getConnection()
         db.insert(Incomes) {
             set(it.incomeDate, java.sql.Date.valueOf(incomeDate.toString()))
+            set(it.incomeTime, java.sql.Time.valueOf(incomeTime.toString()))
             set(it.productAmount, productAmount)
             set(it.productId, productId)
             set(it.incomeOrderId, incomeOrderId)
@@ -246,6 +279,7 @@ class ApplicationDbContext {
             val item = Shipment(
                 row[Shipments.id]!!.toInt(),
                 LocalDate.parse(row[Shipments.shipmentDate].toString()),
+                LocalTime.parse(row[Shipments.shipmentTime].toString()),
                 row[Shipments.productAmount]!!.toInt(),
                 row[Shipments.productId]!!.toInt(),
                 row[Shipments.shipmentOrderId]!!.toInt(),
@@ -257,10 +291,12 @@ class ApplicationDbContext {
         return resultList
     }
 
-    fun addShipment(shipmentDate : LocalDate, productAmount : Int, productId : Int, shipmentOrderId : Int, empId : Int) {
+    fun addShipment(shipmentDate : LocalDate, shipmentTime : LocalTime, productAmount : Int,
+                    productId : Int, shipmentOrderId : Int, empId : Int) {
         val db = api.getConnection()
         db.insert(Shipments) {
             set(it.shipmentDate, java.sql.Date.valueOf(shipmentDate.toString()))
+            set(it.shipmentTime, java.sql.Time.valueOf(shipmentTime.toString()))
             set(it.productAmount, productAmount)
             set(it.productId, productId)
             set(it.shipmentOrderId, shipmentOrderId)
@@ -334,7 +370,7 @@ class ApplicationDbContext {
         return resultList
     }
 
-    fun getUser(username : String) : User {
+    fun getUser(username : String) : User? {
         val db = api.getConnection()
         val resultList = ArrayList<User>()
 
@@ -349,6 +385,45 @@ class ApplicationDbContext {
             resultList.add(item)
         }
 
+        if (resultList.isEmpty())
+        {
+            return null
+        }
+
         return resultList[0]
+    }
+
+    fun getComplectations() : ArrayList<Complectation> {
+        val db = api.getConnection()
+        val resultList = ArrayList<Complectation>()
+
+        for (row in db.from(Complectations).select()) {
+            val item = Complectation(
+                row[Complectations.id]!!.toInt(),
+                row[Complectations.incomeId]!!.toInt(),
+                row[Complectations.productAmount]!!.toInt(),
+                LocalDate.parse(row[Complectations.complectationDate].toString()),
+                LocalTime.parse(row[Complectations.complectationTime].toString())
+            )
+            resultList.add(item)
+        }
+
+        return resultList
+    }
+
+    fun addComplectation(incomeId : Int, productAmount: Int, complectationDate : LocalDate,
+                         complectationTime : LocalTime) {
+        val db = api.getConnection()
+        db.insert(Complectations) {
+            set(it.incomeId, incomeId)
+            set(it.productAmount, productAmount)
+            set(it.complectationDate, java.sql.Date.valueOf(complectationDate.toString()))
+            set(it.complectationTime, java.sql.Time.valueOf(complectationTime.toString()))
+        }
+    }
+
+    fun deleteComplectation(id : Int) {
+        val db = api.getConnection()
+        db.delete(Complectations) { it.id eq id }
     }
 }

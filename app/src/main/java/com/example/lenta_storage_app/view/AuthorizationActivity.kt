@@ -56,8 +56,13 @@ class AuthorizationActivity : AppCompatActivity() {
         if (user.roleId == 1) {
             startActivity(Intent(this, DirectorActivity::class.java));
         }
-        if (user.roleId == 2) {
+        else if (user.roleId == 2) {
             startActivity(Intent(this, ShifSuperVisorActivity::class.java));
+        }
+        else
+        {
+            Toast.makeText(this, "У Вас нет прав доступа к системе", Toast.LENGTH_SHORT).show()
+            return
         }
 
         finish()

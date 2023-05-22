@@ -12,6 +12,7 @@ import com.example.lenta_storage_app.R
 import com.example.lenta_storage_app.infrastructure.MyDateFormatter
 import com.example.lenta_storage_app.view.incomes.IncomeOrdersFragment
 import com.example.lenta_storage_app.view.shipments.ShipmentOrdersFragment
+import com.example.lenta_storage_app.view.statistics.IncomesStatsFragment
 import com.google.android.material.navigation.NavigationBarView
 import java.time.LocalDate
 
@@ -22,7 +23,8 @@ class DirectorActivity : AppCompatActivity(), /*FragmentManager.OnBackStackChang
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_director)
 
-        openFragment(StatsSelectFragment())
+        //openFragment(StatsSelectFragment())
+        openFragment(IncomesStatsFragment())
 
         //config bottom navigation view
         var navigationBarView = findViewById<NavigationBarView>(R.id.bottom_navigation)
@@ -36,7 +38,8 @@ class DirectorActivity : AppCompatActivity(), /*FragmentManager.OnBackStackChang
 
         when (menuItem.itemId) {
             R.id.action_stats -> {
-                openFragment(StatsSelectFragment())
+                //openFragment(StatsSelectFragment())
+                openFragment(IncomesStatsFragment())
                 return@OnItemSelectedListener true
             }
         }

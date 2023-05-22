@@ -81,16 +81,7 @@ class ShipmentStatsFragment : Fragment() {
         chart.data = BarData(dataSet)
         chart.invalidate()
 
-        /*        val formatter: ValueFormatter = object : ValueFormatter() {
-                    override fun getAxisLabel(value: Float, axis: AxisBase): String {
-                        return dateNames[value.toInt()]
-                    }
-                }
-                val xAxis: XAxis = chart.getXAxis()
-                xAxis.granularity = 0f
-                xAxis.valueFormatter = formatter*/
-
-        var textIncomeAmount = view?.findViewById(R.id.text_amount) as TextView
-        textIncomeAmount.text = "Отгружено: " + sum
+        //var textIncomeAmount = view?.findViewById(R.id.text_amount) as TextView
+        //textIncomeAmount.text = "Отгружено: " + sum
     }
 }

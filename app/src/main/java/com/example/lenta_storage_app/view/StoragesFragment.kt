@@ -1,6 +1,7 @@
 package com.example.lenta_storage_app.view
 
 import StorageAdapter
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -34,6 +35,11 @@ class StoragesFragment : Fragment() {
         shifSuperVisorActivity.setActionBarTitle("Склады")
 
         getStorages()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        shifSuperVisorActivity.navigationBarView.menu.findItem(R.id.action_shipments).isVisible = false
     }
 
     private fun getStorages() {

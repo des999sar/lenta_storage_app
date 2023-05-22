@@ -4,17 +4,20 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:paddingLeft="25dp"
-    android:paddingRight="25dp">
+    android:paddingRight="25dp"
+    android:background="@drawable/background">
 
     <Button
         android:id="@+id/button_incomes_stats"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/purple_700"
         android:text="Статистика по приёмке" />
 
     <Button
         android:id="@+id/button_shipments_stats"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/purple_700"
         android:text="Статистика по отгрузке" />
 </LinearLayout>
