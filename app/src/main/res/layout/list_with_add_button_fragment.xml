@@ -7,19 +7,20 @@
     android:orientation="vertical"
     android:background="@drawable/background">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view_with_add_button"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-
+        </ScrollView>
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btnAdd"
             android:layout_width="wrap_content"
@@ -31,7 +32,5 @@
             android:backgroundTint="@color/purple_700"
             app:tint="@color/white"
             app:srcCompat="@android:drawable/ic_input_add" />
-
     </FrameLayout>
-    </ScrollView>
 </LinearLayout>

@@ -121,9 +121,33 @@ class ApplicationDbContext {
         val db = api.getJdbcConnection()
         var resultList = ArrayList<Statistic>()
         val convertedDate = java.sql.Date.valueOf(date.toString())
-
         try {
-            val sql = "call lenta_storage.get_stats_on_date('$convertedDate');".trimIndent()
+            val sql = "select concat(lpad(h.h, 2, '0'), ':', '00') as time_string,\n" +
+                    "case when i.amount is null then 0 else i.amount end as income_amount,\n" +
+                    "case when c.amount is null then 0 else c.amount end as complectation_amount,\n" +
+                    "case when s.amount is null then 0 else s.amount end as shipment_amount\n" +
+                    "from hours h\n" +
+                    "left join\n" +
+                    "(\n" +
+                    "\tselect hour(ii.income_time) as h, sum(ii.product_amount) as amount\n" +
+                    "    from incomes ii\n" +
+                    "    where ii.income_date = '$convertedDate'\n" +
+                    "    group by hour(ii.income_time)\n" +
+                    ") i on i.h = h.h\n" +
+                    "left join\n" +
+                    "(\n" +
+                    "\tselect hour(cc.complectation_time) as h, sum(cc.product_amount) as amount\n" +
+                    "    from complectations cc\n" +
+                    "    where cc.complectation_date = '$convertedDate'\n" +
+                    "    group by hour(cc.complectation_time)\n" +
+                    ") c on c.h = h.h\n" +
+                    "left join\n" +
+                    "(\n" +
+                    "\tselect hour(ss.shipment_time) as h, sum(ss.product_amount) as amount\n" +
+                    "    from shipments ss\n" +
+                    "    where ss.shipment_date = '$convertedDate'\n" +
+                    "    group by hour(ss.shipment_time)\n" +
+                    ") s on s.h = h.h;"
             val query = db.prepareStatement(sql)
             val result = query.executeQuery()
             while (result.next()) {
